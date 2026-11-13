@@ -33,3 +33,12 @@ and collapses whitespace. Word-level TF-IDF uses unigrams and the training
 split alone for vocabulary and IDF fitting. No stop words, stemming, or
 lemmatization are used. Validation reviews are only transformed; the official
 test set is excluded from feature extraction at this step.
+
+## Phase 1 exploratory figures
+
+Install `matplotlib` alongside the dependencies above, then run
+`python src/visualize_eda.py` from the repository root. The script writes
+three report-ready PNG figures to `output/`: sentiment balance in the labelled
+training/validation splits, training review-length distributions, and a 2D
+Truncated SVD view of training TF-IDF features. The SVD is fitted on all
+training reviews; a seeded sample of up to 2,000 reviews per class is plotted.
