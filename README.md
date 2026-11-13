@@ -46,10 +46,10 @@ training reviews; a seeded sample of up to 2,000 reviews per class is plotted.
 ## Phase 1 logistic regression baseline
 
 Run `python src/train_logistic_baseline.py` from the repository root. It fits
-L2-regularized binary logistic regression at `C = 0.1, 1, 10` on training
-TF-IDF features and selects by validation F1 for the positive class, breaking
-exact ties in favour of smaller `C`. The script saves candidate training and
-validation metrics to `output/logistic_validation_results.csv` and the 15
-largest positive/negative word coefficients to
-`output/logistic_top_coefficients.csv`. Test labels are not loaded and the
-selected model is not refitted on all development data at this stage.
+L2-regularized binary logistic regression at `C = 0.1, 1, 3, 10, 30, 100`
+on training TF-IDF features. It saves training and validation accuracy,
+precision, recall, F1, log loss, and generalization gaps to
+`output/logistic_validation_results.csv`, plus a comparison plot in
+`output/logistic_regularization_comparison.png`. The existing coefficient
+table is regenerated for `C = 10` as a labelled reference, not a final model
+choice. Test labels are not loaded; no complete-development refit occurs.
