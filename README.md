@@ -42,3 +42,14 @@ three report-ready PNG figures to `output/`: sentiment balance in the labelled
 training/validation splits, training review-length distributions, and a 2D
 Truncated SVD view of training TF-IDF features. The SVD is fitted on all
 training reviews; a seeded sample of up to 2,000 reviews per class is plotted.
+
+## Phase 1 logistic regression baseline
+
+Run `python src/train_logistic_baseline.py` from the repository root. It fits
+L2-regularized binary logistic regression at `C = 0.1, 1, 10` on training
+TF-IDF features and selects by validation F1 for the positive class, breaking
+exact ties in favour of smaller `C`. The script saves candidate training and
+validation metrics to `output/logistic_validation_results.csv` and the 15
+largest positive/negative word coefficients to
+`output/logistic_top_coefficients.csv`. Test labels are not loaded and the
+selected model is not refitted on all development data at this stage.
