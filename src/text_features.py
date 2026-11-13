@@ -41,20 +41,11 @@ def clean_review(text: str) -> str:
     return WHITESPACE.sub(" ", text.lower()).strip()
 
 
-def build_text_features(splits: EvaluationSplits | None = None) -> TextFeatures:
-    """Fit TF-IDF on training reviews and transform validation reviews only"""
-    if splits is None:
-        splits = make_splits()
-
-    train_texts = [clean_review(text) for text in splits.train.texts]
-    validation_texts = [clean_review(text) for text in splits.validation.texts]
-    if any(not text for text in train_texts + validation_texts):
-        raise ValueError("A review became empty after text cleaning")
-
-
-    # 1- Keep all observed unigrams, including negations
-    # 2- Do not apply stop-word removal or linguistic reduction before training the linear baseline
-    vectorizer = TfidfVectorizer(
+def make_vectorizer() -> TfidfVectorizer:
+    """Create the approved unigram TF-IDF configuration for any training set"""
+    # Keep all observed unigrams, including negations
+    # no stop-word list or linguistic reduction is applied before the linear baseline
+    return TfidfVectorizer(
         analyzer="word",
         ngram_range=(1, 1),
         lowercase=False,
@@ -66,6 +57,20 @@ def build_text_features(splits: EvaluationSplits | None = None) -> TextFeatures:
         smooth_idf=True,
         sublinear_tf=False,
     )
+
+
+def build_text_features(splits: EvaluationSplits | None = None) -> TextFeatures:
+    """Fit TF-IDF on training reviews and transform validation reviews only"""
+    if splits is None:
+        splits = make_splits()
+
+    train_texts = [clean_review(text) for text in splits.train.texts]
+    validation_texts = [clean_review(text) for text in splits.validation.texts]
+    if any(not text for text in train_texts + validation_texts):
+        raise ValueError("A review became empty after text cleaning")
+
+
+    vectorizer = make_vectorizer()
 
     # 1- Fit the vectorizer on training reviews only
     # 2- Transform validation reviews with the fitted vectorizer

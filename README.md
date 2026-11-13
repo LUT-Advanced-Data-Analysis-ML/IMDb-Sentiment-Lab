@@ -53,3 +53,21 @@ precision, recall, F1, log loss, and generalization gaps to
 `output/logistic_regularization_comparison.png`. The existing coefficient
 table is regenerated for `C = 10` as a labelled reference, not a final model
 choice. Test labels are not loaded; no complete-development refit occurs.
+
+## Final Phase 1 baseline evaluation
+
+Run `python src/evaluate_final_baseline.py` from the repository root after
+installing the dependencies listed above. The group selected `C = 10` using
+validation F1, supported by validation log loss. The script combines the
+19,825 training and 4,956 validation reviews, refits the same unigram TF-IDF
+configuration on all 24,781 eligible development reviews, then fits L2
+logistic regression with `liblinear`, `C = 10`, and seed 42. The 123 exact
+train-test overlaps and 96 repeated training rows remain excluded from the
+development pool. All original Parquet files, including every one of the
+25,000 official test rows, remain unchanged.
+
+Final test metrics and counts are saved in `output/final_test_results.json`;
+the confusion matrix, ROC curve, and four illustrative error excerpts are
+saved beside it. Validation results in `output/logistic_validation_results.csv`
+refer to the earlier 19,825/4,956 split and are distinct from final test
+results. The test set is evaluated once and does not influence the model.
