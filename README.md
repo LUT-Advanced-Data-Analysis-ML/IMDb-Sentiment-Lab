@@ -17,5 +17,19 @@ are reserved for final evaluation. The unsupervised file is not used.
 ## Repository layout
 
 - `data/`: original IMDb Parquet files, preserved as supplied.
-- `src/`: Python source files.
+- `src/`: Python source files for splitting and text features.
 - `output/`: generated figures, results, and the final PDF report.
+
+## Phase 1 text features
+
+Install `scikit-learn` and `scipy` alongside `pyarrow`, then run
+`python src/text_features.py` from the repository root. The command prints
+the sparse training/validation matrix shapes and vocabulary size without
+writing feature files. Later code can import `build_text_features()` from
+`src.text_features` to reuse the fitted vectorizer and aligned labels.
+
+Review cleaning decodes HTML entities, removes HTML tags, lowercases text,
+and collapses whitespace. Word-level TF-IDF uses unigrams and the training
+split alone for vocabulary and IDF fitting. No stop words, stemming, or
+lemmatization are used. Validation reviews are only transformed; the official
+test set is excluded from feature extraction at this step.
