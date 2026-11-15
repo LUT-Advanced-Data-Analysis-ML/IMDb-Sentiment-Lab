@@ -1,73 +1,63 @@
-# IMDb-Sentiment-Lab
-Comparing Machine Learning Models for IMDb Review Sentiment Classification
+# IMDb Sentiment Classification — Phase 1
 
-## Phase 1 evaluation split
+This university course project classifies IMDb movie reviews as positive or negative. Phase 1 establishes a reproducible **word-level TF-IDF unigram + logistic regression** baseline, with exploratory visualizations and one final evaluation on the official test set. The 50,000-review unsupervised split is reserved for later work.
 
-Install `pyarrow`, then run `python src/split_data.py` from the repository root
-to print the split counts and verification results. Later code can import
-`make_splits()` from `src.split_data` to obtain the labelled training and
-validation reviews in memory. No derived dataset files are written.
-
-The split procedure checks for conflicting labels on identical training text,
-excludes exact train/test review overlaps from training, deduplicates the
-remaining training reviews, and creates an 80/20 shuffled stratified split
-with seed 42. It reads test review text only for the overlap check; test labels
-are reserved for final evaluation. The unsupervised file is not used.
+The academic report is [ADAML_IMDB_Phase_1.pdf](ADAML_IMDB_Phase_1.pdf). Saved figures and machine-readable results are in [`output/`](output/).
 
 ## Repository layout
 
-- `data/`: original IMDb Parquet files, preserved as supplied.
-- `src/`: Python source files for splitting and text features.
-- `output/`: generated figures, results, and the final PDF report.
+| Path | Contents |
+| --- | --- |
+| `data/` | Original train, test, and unsupervised Parquet files; scripts read but do not edit them. |
+| `src/split_data.py` | Checks labels and exact review overlap, removes ineligible training rows, and builds the fixed training/validation split in memory. |
+| `src/text_features.py` | Cleans review text and fits training-only unigram TF-IDF features. |
+| `src/visualize_eda.py` | Creates class-balance, review-length, and two-dimensional Truncated SVD figures. |
+| `src/train_logistic_baseline.py` | Compares six regularization strengths on the fixed validation split. |
+| `src/evaluate_final_baseline.py` | Refits the locked model on eligible development data and evaluates the unchanged official test set. |
+| `output/` | Generated figures, validation and test results, coefficients, and illustrative error examples. |
+| `ADAML_IMDB_Phase_1.pdf` | Final Phase 1 report. |
 
-## Phase 1 text features
+## Setup
 
-Install `scikit-learn` and `scipy` alongside `pyarrow`, then run
-`python src/text_features.py` from the repository root. The command prints
-the sparse training/validation matrix shapes and vocabulary size without
-writing feature files. Later code can import `build_text_features()` from
-`src.text_features` to reuse the fitted vectorizer and aligned labels.
+Use Python **3.10 or newer**. From the repository root, create a virtual environment and install the packages used by the scripts:
 
-Review cleaning decodes HTML entities, removes HTML tags, lowercases text,
-and collapses whitespace. Word-level TF-IDF uses unigrams and the training
-split alone for vocabulary and IDF fitting. No stop words, stemming, or
-lemmatization are used. Validation reviews are only transformed; the official
-test set is excluded from feature extraction at this step.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
 
-## Phase 1 exploratory figures
+On Windows PowerShell, use `py -3 -m venv .venv` and `.venv\Scripts\Activate.ps1` for the first two commands. The three Parquet files are already included in `data/`.
 
-Install `matplotlib` alongside the dependencies above, then run
-`python src/visualize_eda.py` from the repository root. The script writes
-three report-ready PNG figures to `output/`: sentiment balance in the labelled
-training/validation splits, training review-length distributions, and a 2D
-Truncated SVD view of training TF-IDF features. The SVD is fitted on all
-training reviews; a seeded sample of up to 2,000 reviews per class is plotted.
+## Reproduce the workflow
 
-## Phase 1 logistic regression baseline
+Run commands from the repository root. The order below follows the analysis, but **each script loads the original data and recreates the required splits/features independently**. 
 
-Run `python src/train_logistic_baseline.py` from the repository root. It fits
-L2-regularized binary logistic regression at `C = 0.1, 1, 3, 10, 30, 100`
-on training TF-IDF features. It saves training and validation accuracy,
-precision, recall, F1, log loss, and generalization gaps to
-`output/logistic_validation_results.csv`, plus a comparison plot in
-`output/logistic_regularization_comparison.png`. The existing coefficient
-table is regenerated for `C = 10` as a labelled reference, not a final model
-choice. Test labels are not loaded; no complete-development refit occurs.
+No generated output is an input to a later script. The first two commands print checks without writing result files.
 
-## Final Phase 1 baseline evaluation
+| Step | Command | Expected output |
+| --- | --- | --- |
+| 1. Audit the evaluation split | `python src/split_data.py` | Counts and disjointness checks printed as JSON. |
+| 2. Check text features | `python src/text_features.py` | Training/validation matrix shapes and vocabulary size printed as JSON. |
+| 3. Create EDA figures | `python src/visualize_eda.py` | `output/eda_class_distribution.png`, `output/eda_review_lengths.png`, `output/eda_tfidf_svd.png`. |
+| 4. Reproduce validation comparison | `python src/train_logistic_baseline.py` | `output/logistic_validation_results.csv`, `output/logistic_regularization_comparison.png`, `output/logistic_top_coefficients.csv`. |
+| 5. Reproduce the locked final evaluation | `python src/evaluate_final_baseline.py` | `output/final_test_results.json`, `output/final_test_confusion_matrix.png`, `output/final_test_roc_curve.png`, and `output/final_test_error_examples.csv`. |
 
-Run `python src/evaluate_final_baseline.py` from the repository root after
-installing the dependencies listed above. The group selected `C = 10` using
-validation F1, supported by validation log loss. The script combines the
-19,825 training and 4,956 validation reviews, refits the same unigram TF-IDF
-configuration on all 24,781 eligible development reviews, then fits L2
-logistic regression with `liblinear`, `C = 10`, and seed 42. The 123 exact
-train-test overlaps and 96 repeated training rows remain excluded from the
-development pool. All original Parquet files, including every one of the
-25,000 official test rows, remain unchanged.
+Steps 3–5 rewrite their corresponding saved outputs when run. Step 5 reads official test labels and is for reproducing the completed evaluation only; it does not tune the model. The report PDF is a separate, manually prepared deliverable and is not generated by these scripts.
 
-Final test metrics and counts are saved in `output/final_test_results.json`;
-the confusion matrix, ROC curve, and four illustrative error excerpts are
-saved beside it. Validation results in `output/logistic_validation_results.csv`
-refer to the earlier 19,825/4,956 split and are distinct from final test
-results. The test set is evaluated once and does not influence the model.
+## Method and verified results
+
+The original labelled training file has 25,000 reviews. The split procedure excludes **123 exact train–test overlapping training rows**, then removes **96 duplicate training rows**, leaving **24,781** eligible development reviews. It creates a shuffled, stratified 80/20 training/validation split with seed 42. The original 25,000-row test file remains unchanged.
+
+Cleaning decodes HTML entities, removes tags, lowercases text, and normalizes whitespace. Negations are retained; there is no stop-word removal, stemming, or lemmatization. During validation, TF-IDF vocabulary and IDF weights are fitted only on the 19,825 training reviews. L2 logistic regression with the `liblinear` solver compares `C = 0.1, 1, 3, 10, 30, 100`; **C = 10** was chosen using validation F1, supported by validation log loss. The final vectorizer and classifier are refitted on all 24,781 eligible development reviews before the single held-out test evaluation.
+
+| Measure | Validation, C = 10 | Final test |
+| --- | ---: | ---: |
+| Accuracy | 0.8995 | 0.8808 |
+| Precision | 0.8946 | 0.8867 |
+| Recall | 0.9068 | 0.8732 |
+| F1 | 0.9006 | 0.8799 |
+| ROC-AUC | — | 0.9513 |
+| Log loss | 0.2521 | 0.2834 |
+
+Validation and test numbers come from **different fitted models**. Precision, recall, and F1 use the positive class. See the [report](ADAML_IMDB_Phase_1.pdf) for interpretation and the figures, or the saved [validation table](output/logistic_validation_results.csv) and [test results](output/final_test_results.json) for full numerical detail.

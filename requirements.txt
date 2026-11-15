@@ -1,0 +1,5 @@
+matplotlib
+numpy
+pyarrow
+scikit-learn<1.10
+scipy
