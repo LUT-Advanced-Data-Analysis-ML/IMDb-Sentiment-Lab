@@ -1,8 +1,12 @@
-"""Create Phase 1 figures from the approved labelled development splits.
+"""Create the Phase 1 exploratory figures from approved development data.
 
-Class balance is shown for training and validation. Review lengths and the
-two-dimensional TF-IDF view use training reviews only. The official test set
-is accessed by the split loader for exact-overlap exclusion, not for plots.
+1. Load the fixed splits and fit training-only unigram TF-IDF features.
+2. Plot training/validation class balance and cleaned training-review lengths.
+3. Fit two Truncated SVD components on all training features and display a
+   seeded sample of 2,000 reviews from each class.
+4. Save three labelled PNG figures to output/ and print their settings. The
+   split loader accesses test text for overlap exclusion, but no test review
+   is used in the plots.
 """
 
 import json

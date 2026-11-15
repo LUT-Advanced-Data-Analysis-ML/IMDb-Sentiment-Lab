@@ -1,8 +1,12 @@
-"""Recreate the Phase 1 labelled training and validation splits in memory.
+"""Build the fixed Phase 1 training and validation splits in memory.
 
-Identical training reviews are checked for label conflicts before removal.
-Only review text is read from the official test file to exclude exact overlap;
-test labels remain sealed for final evaluation. No split files are saved.
+1. Read labelled training reviews and test review text. We do not load test labels.
+2. Reject conflicting labels, exclude exact train-test overlaps, and deduplicate
+   the remaining training reviews by raw text.
+3. Shuffle within each class with seed 42 and assign 80% to training and 20%
+   to validation.
+4. Verify disjointness and row counts, then return aligned reviews, labels,
+   and a summary. The unsupervised file is not used and no files are written.
 """
 
 from collections import Counter

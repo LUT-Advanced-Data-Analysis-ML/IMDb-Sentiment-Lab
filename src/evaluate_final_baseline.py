@@ -1,8 +1,13 @@
 """Refit the approved C=10 baseline and evaluate the official test set once.
 
-The development pool is the union of the fixed training and validation splits
-after approved exact-overlap removal and deduplication. TF-IDF and logistic
-regression are fitted only on that pool; test labels are used for final metrics.
+1. Combine the fixed training and validation splits after approved overlap
+   removal and deduplication, and load the original test rows unchanged.
+2. Verify counts and text disjointness, then fit unigram TF-IDF and liblinear
+   L2 logistic regression only on eligible development reviews.
+3. Transform test reviews with the fitted vectorizer and calculate the locked
+   model's test metrics, confusion matrix, and ROC curve.
+4. Save results, figures, and illustrative error excerpts in output/. Test
+   performance does not change the model or its decision threshold.
 """
 
 import csv

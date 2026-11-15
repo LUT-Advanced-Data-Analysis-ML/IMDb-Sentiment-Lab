@@ -1,8 +1,11 @@
-"""Clean IMDb reviews and build training-fitted unigram TF-IDF features.
+"""Turn approved IMDb development splits into sparse unigram TF-IDF features.
 
-The approved split loader supplies labelled training and validation reviews.
-Only training reviews determine the vocabulary and IDF weights; validation
-reviews are transformed with that fitted vectorizer. Test data are not used.
+1. Obtain the fixed labelled training and validation reviews from split_data.
+2. Decode HTML entities, remove tags, lowercase, and normalize whitespace.
+3. Fit the unigram vocabulary and IDF weights on training reviews only, then
+   transform validation reviews with the same vectorizer.
+4. Return both sparse matrices, aligned labels, and the fitted vectorizer.
+   Test reviews are not vectorized here; no feature files are written.
 """
 
 from dataclasses import dataclass

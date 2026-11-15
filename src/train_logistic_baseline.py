@@ -1,8 +1,11 @@
 """Compare L2 logistic-regression strengths on the fixed validation split.
 
-The approved split and training-fitted TF-IDF features are reused unchanged.
-Only training rows fit the classifiers. The official test labels are never
-read, and no final C choice or full-development refit is made here.
+1. Load the approved splits and fit TF-IDF on the training reviews only.
+2. Fit liblinear logistic regression for six C values using training features.
+3. Measure training/validation classification metrics and log loss, then save
+   their comparison table and figure in output/.
+4. Save the C=10 word coefficients as a labelled reference, without making a
+   final model choice. Test labels are never read or evaluated here.
 """
 
 import csv
