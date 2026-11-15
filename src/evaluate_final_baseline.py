@@ -150,7 +150,7 @@ def main() -> None:
     development_x = vectorizer.fit_transform(cleaned_development)
     test_x = vectorizer.transform(cleaned_test)
     model = LogisticRegression(
-        C=FINAL_C, penalty="l2", solver="liblinear", max_iter=1000, random_state=SEED
+        C=FINAL_C, l1_ratio=0, solver="liblinear", max_iter=1000, random_state=SEED
     )
     model.fit(development_x, development_labels)
     if model.n_iter_[0] >= model.max_iter or list(model.classes_) != [0, 1]:

@@ -1,4 +1,4 @@
-# IMDb Sentiment Classification — Phase 1
+# IMDb Sentiment Classification - Phase 1
 
 This university course project classifies IMDb movie reviews as positive or negative. Phase 1 establishes a reproducible **word-level TF-IDF unigram + logistic regression** baseline, with exploratory visualizations and one final evaluation on the official test set. The 50,000-review unsupervised split is reserved for later work.
 
@@ -19,7 +19,7 @@ The academic report is [ADAML_IMDB_Phase_1.pdf](ADAML_IMDB_Phase_1.pdf). Saved f
 
 ## Setup
 
-Use Python **3.10 or newer**. From the repository root, create a virtual environment and install the packages used by the scripts:
+Use Python **3.11 or newer**. From the repository root, create a virtual environment and install the packages used by the scripts:
 
 ```bash
 python3 -m venv .venv
@@ -57,7 +57,7 @@ Cleaning decodes HTML entities, removes tags, lowercases text, and normalizes wh
 | Precision | 0.8946 | 0.8867 |
 | Recall | 0.9068 | 0.8732 |
 | F1 | 0.9006 | 0.8799 |
-| ROC-AUC | — | 0.9513 |
+| ROC-AUC | - | 0.9513 |
 | Log loss | 0.2521 | 0.2834 |
 
 Validation and test numbers come from **different fitted models**. Precision, recall, and F1 use the positive class. See the [report](ADAML_IMDB_Phase_1.pdf) for interpretation and the figures, or the saved [validation table](output/logistic_validation_results.csv) and [test results](output/final_test_results.json) for full numerical detail.

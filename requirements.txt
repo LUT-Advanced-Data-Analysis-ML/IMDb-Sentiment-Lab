@@ -1,5 +1,5 @@
 matplotlib
 numpy
 pyarrow
-scikit-learn<1.10
+scikit-learn>=1.8,<1.10
 scipy

@@ -117,7 +117,7 @@ def main() -> None:
     candidates = []
     for C in C_VALUES:
         model = LogisticRegression(
-            C=C, penalty="l2", solver="liblinear", max_iter=1000, random_state=SEED
+            C=C, l1_ratio=0, solver="liblinear", max_iter=1000, random_state=SEED
         )
         model.fit(features.train_x, train_y)
         if model.n_iter_[0] >= model.max_iter:
